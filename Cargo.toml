@@ -1,0 +1,9 @@
+[package]
+name = "cinv"
+version = "0.1.0"
+edition = "2021"
+description = "GB 11643-1999 Chinese citizen identification number validator"
+license = "MIT"
+
+[dependencies]
+# 无需任何外部依赖
