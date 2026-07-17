@@ -241,9 +241,9 @@ Example
 当民政部发布最新数据后，运行项目中的生成脚本即可更新：
 
 bash
-# 1. 下载最新的 area_code.csv
+# 1. 下载最新的 address_codes.csv
 # 2. 运行生成脚本
-python scripts/generate_address_codes.py data/area_code.csv src/address_codes.rs
+python scripts/generate_address_codes.py data/address_codes.csv src/address_codes.rs
 
 # 3. 重新编译
 cargo build
@@ -259,7 +259,7 @@ cn_id_validator/
 ├── scripts/
 │   └── generate_address_codes.py  # 地址码生成脚本
 └── data/
-    └── area_code.csv               # 原始地址码数据源
+    └── address_codes.csv               # 原始地址码数据源
 Testing
 bash
 # 运行所有测试

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # ===== 关键修复：在脚本最开头强制设置编码环境 =====
-# cmd /c "set PYTHONIOENCODING=utf-8 && python scripts/generate_address_codes.py data/area_code.csv src/address_codes.rs"
+# 注意: 该脚本只支持python3
+# cmd /c "set PYTHONIOENCODING=utf-8 && python scripts/generate_address_codes_rs.py data/address_codes.csv src/address_codes.rs"
 import sys
 import locale
 
@@ -160,8 +161,8 @@ def main():
         print(f"  {sys.argv[0]} <data.csv> [output.rs]", file=sys.stderr)
         print("", file=sys.stderr)
         print("示例:", file=sys.stderr)
-        print(f"  {sys.argv[0]} data/area_code.csv src/address_codes.rs", file=sys.stderr)
-        print(f"  {sys.argv[0]} data/area_code.csv > src/address_codes.rs", file=sys.stderr)
+        print(f"  {sys.argv[0]} data/address_codes.csv src/address_codes.rs", file=sys.stderr)
+        print(f"  {sys.argv[0]} data/address_codes.csv > src/address_codes.rs", file=sys.stderr)
         sys.exit(1)
     
     csv_path = sys.argv[1]
