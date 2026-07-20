@@ -160,7 +160,6 @@ cargo test test_generate_valid_id
 - 内置地址码使用 LazyLock静态初始化，首次调用后零开销
 - HashMap查找时间复杂度 O(1)
 - 单次校验仅需微秒级，适合高并发场景  
-单次校验仅需微秒级，适合高并发场景  
 
 ## License 
 
