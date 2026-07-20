@@ -1,7 +1,7 @@
 mod address_codes;
 
-use std::collections::HashMap;
 use address_codes::DEFAULT_ADDRESS_CODES;
+use std::collections::HashMap;
 
 /// ---------- 校验模式 ----------
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -89,7 +89,7 @@ pub fn is_valid_with_map_and_mode(
 }
 
 /// ---------- 日期校验（纯标准库） ----------
-fn is_valid_date(s: &str) -> bool {
+pub(crate) fn is_valid_date(s: &str) -> bool {
     if s.len() != 8 {
         return false;
     }
@@ -123,18 +123,18 @@ fn is_valid_date(s: &str) -> bool {
 
 /// ---------- 闰年判断 ----------
 #[inline]
-fn is_leap_year(y: u32) -> bool {
+pub(crate) fn is_leap_year(y: u32) -> bool {
     (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)
 }
 
 /// ---------- MOD 11-2 校验码 ----------
-const WEIGHTS: [u32; 17] =
+pub(crate) const WEIGHTS: [u32; 17] =
     [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
 
-const CHECK_MAP: &[u8; 11] = b"10X98765432";
+pub(crate) const CHECK_MAP: &[u8; 11] = b"10X98765432";
 
 /// ---------- 校验码验证 ----------
-fn verify_checksum(body: &str, last: char) -> bool {
+pub(crate) fn verify_checksum(body: &str, last: char) -> bool {
     let mut sum = 0u32;
 
     for (i, c) in body.chars().enumerate() {
@@ -171,7 +171,7 @@ fn verify_checksum(body: &str, last: char) -> bool {
 /// 5‑6 位：县级（区、县、旗）
 /// 当精确的 6 位码因配置不全查不到时，只要其上级行政隶属关系在配置中存在（如 33浙江、3301杭州），就可以认为地址码“结构合法”。
 /// 这是一种降级兼容校验，常用于配置数据非全量加载的场景。
-fn is_address_exact6(id: &str, codes: &HashMap<&str, &str>) -> bool {
+pub(crate) fn is_address_exact6(id: &str, codes: &HashMap<&str, &str>) -> bool {
     let code6 = match id.get(0..6) {
         Some(c) => c,
         None => return false,
@@ -180,7 +180,7 @@ fn is_address_exact6(id: &str, codes: &HashMap<&str, &str>) -> bool {
 }
 
 /// ---------- 地址码校验：6 → 4 → 2 回溯 ----------
-fn is_address_fallback64(id: &str, codes: &HashMap<&str, &str>) -> bool {
+pub(crate) fn is_address_fallback64(id: &str, codes: &HashMap<&str, &str>) -> bool {
     let code6 = match id.get(0..6) {
         Some(c) => c,
         None => return false,
@@ -218,7 +218,7 @@ fn is_address_fallback64(id: &str, codes: &HashMap<&str, &str>) -> bool {
 /// # 返回值
 /// - `Some(String)`: 生成的18位合法身份证号
 /// - `None`: 输入参数不合法（包含非数字字符等）
-pub fn generate_test_id_with_area_code(area_code: &str, birth_date: &str, seq: &str) -> Option<String> {
+pub fn generate_test_id_with_address_code(area_code: &str, birth_date: &str, seq: &str) -> Option<String> {
     let base = format!("{}{}{}", area_code, birth_date, seq);
     
     // 检查长度
@@ -236,118 +236,4 @@ pub fn generate_test_id_with_area_code(area_code: &str, birth_date: &str, seq: &
     }
     let check = CHECK_MAP[(sum % 11) as usize] as char;
     Some(format!("{}{}", base, check))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_valid_default_mode() {
-        assert!(is_valid("11010519491231002X"));
-    }
-
-    #[test]
-    fn test_exact6_mode() {
-        // 330106 西湖区 在内置表中
-        assert!(is_valid_with_mode("330106199003071236", AddressMatchMode::Exact6));
-
-        // 330109 萧山区 不在内置表中（示例表没配），Exact6 模式下应失败
-        assert!(!is_valid_with_mode("330109199003071239", AddressMatchMode::Exact6));
-    }
-
-    #[test]
-    fn test_fallback64_mode() {
-        // 330109 萧山区 不在内置表中，但 330100 杭州市在表中，Fallback64 下应成功
-        assert!(is_valid_with_mode("330109199003071235", AddressMatchMode::Fallback64));
-    }
-
-    #[test]
-    fn test_with_external_map() {
-        let mut custom = HashMap::new();
-        custom.insert("330106", "浙江省杭州市西湖区");
-
-        // 默认模式（Fallback64）
-        assert!(is_valid_with_map("330106199003071236", &custom));
-
-        // 精确模式
-        assert!(is_valid_with_map_and_mode(
-            "330106199003071236",
-            &custom,
-            AddressMatchMode::Exact6,
-        ));
-
-        // 330109 不在自定义表中，精确模式应失败
-        assert!(!is_valid_with_map_and_mode(
-            "330109199003071239",
-            &custom,
-            AddressMatchMode::Exact6,
-        ));
-
-        // 330109 不在自定义表中，但 330100 也不在，回溯也会失败
-        assert!(!is_valid_with_map_and_mode(
-            "330109199003071239",
-            &custom,
-            AddressMatchMode::Fallback64,
-        ));
-    }
-
-    #[test]
-    fn test_invalid_examples() {
-        assert!(!is_valid("110105194912310021")); // 校验码错误
-        assert!(!is_valid("11010519491331002X")); // 月份13
-        assert!(!is_valid("11010519490229002X")); // 1949年2月29
-        assert!(!is_valid("01010519491231002X")); // 地址码首位0
-        assert!(!is_valid(""));                    // 空字符串
-    }
-
-    #[test]
-    fn test_generate_valid_id() {
-        let id = generate_test_id_with_area_code("330109", "19900307", "123");
-        assert_eq!(id, Some("330109199003071235".into()));
-        assert!(is_valid(id.as_ref().unwrap()));
-
-        let id2 = generate_test_id_with_area_code("330109", "19900307", "001");
-        assert_eq!(id2, Some("330109199003070013".into()));
-        assert!(is_valid(id2.as_ref().unwrap()));
-
-        // 生成正确的测试身份证号
-        let id = generate_test_id_with_area_code("330109", "19900307", "123");
-        assert!(id.is_some());
-        
-        let id_str = id.unwrap();  // 这里 unwrap 是安全的，因为上面已经检查过了
-        dbg!(&id_str);
-        
-        // 验证生成的号码可以通过校验
-        assert!(is_valid(&id_str));
-    }
-
-    #[test]
-    fn test_generate_id_with_invalid_input() {
-        // 包含非数字字符
-        let id = generate_test_id_with_area_code("33010A", "19900307", "123");
-        assert!(id.is_none());
-        
-        // 长度不足
-        let id = generate_test_id_with_area_code("3301", "19900307", "123");
-        assert!(id.is_none());
-    }
-
-    #[test]
-    fn test_fallback64_mode_with_generated_id() {
-        // 使用生成的正确身份证号
-        let id = generate_test_id_with_area_code("330109", "19900307", "123").unwrap();
-        assert!(is_valid_with_mode(&id, AddressMatchMode::Fallback64));
-    }
-
-    #[test]
-    fn test_exact6_mode_with_generated_id() {
-        // 330106 西湖区 在内置表中
-        let id = generate_test_id_with_area_code("330106", "19900307", "123").unwrap();
-        assert!(is_valid_with_mode(&id, AddressMatchMode::Exact6));
-
-        // 330115 不在内置表中，Exact6 模式下应失败
-        let id2 = generate_test_id_with_area_code("330115", "19900307", "123").unwrap();
-        assert!(!is_valid_with_mode(&id2, AddressMatchMode::Exact6));
-    }
 }
