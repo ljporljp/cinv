@@ -5,6 +5,13 @@ Chinese citizen identification number validator​ compliant with GB 11643‑199
 校验中国居民身份证号码（18位）的合法性，严格遵循 GB 11643‑1999《公民身份号码》​ 国家标准。
 --- 
 
+[![Crates.io](https://img.shields.io/crates/v/cinv.svg)](https://crates.io/crates/cinv)
+[![Downloads](https://img.shields.io/crates/d/cinv)](https://crates.io/crates/cinv)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![docs.rs](https://docs.rs/cinv/badge.svg)](https://docs.rs/cinv)
+[![dependency status](https://deps.rs/repo/github/ljporljp/cinv/status.svg)](https://deps.rs/repo/github/ljporljp/cinv)
+![MSRV](https://img.shields.io/badge/MSRV-1.80.0-blue)
+
 ## Features
 
 ✅ 18 位格式校验：长度、字符集、地址码首位
@@ -24,8 +31,6 @@ Chinese citizen identification number validator​ compliant with GB 11643‑199
 ✅ 零 unwrap：所有错误路径安全处理，无 panic 风险
 
 ✅ 线程安全：内置地址码使用 LazyLock惰性初始化
-
-## MSRV: ![MSRV](https://img.shields.io/badge/MSRV-1.80.0-blue) (Rust 1.80.0+)
 
 ## Quick Start
 
