@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "GB 11643-1999 Chinese citizen identification number validator"
 license = "MIT"
-
-[dependencies]
-# 无需任何外部依赖
+repository = "https://github.com/ljporljp/cinv"
+readme = "README.md"
+authors = ["kiro <imljp@foxmail.com>"]
+keywords = ["china", "id-card", "gb11643", "validator", "citizen"]
+categories = ["parser-implementations", "algorithms", "encoding", "development-tools", "text-processing"]
