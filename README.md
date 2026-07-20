@@ -24,6 +24,8 @@ Features
 
 ✅ 线程安全：内置地址码使用 LazyLock惰性初始化
 
+MSRV: ![MSRV](https://img.shields.io/badge/MSRV-1.80.0-blue) (Rust 1.80.0+)
+
 Installation
 
 在 Cargo.toml中添加：

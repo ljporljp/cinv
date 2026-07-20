@@ -9,3 +9,4 @@ readme = "README.md"
 authors = ["kiro <imljp@foxmail.com>"]
 keywords = ["china", "id-card", "gb11643", "validator", "citizen"]
 categories = ["parser-implementations", "algorithms", "encoding", "development-tools", "text-processing"]
+rust-version = "1.80.0"
