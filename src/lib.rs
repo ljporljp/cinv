@@ -44,19 +44,15 @@ pub fn is_valid_with_map_and_mode(
 ) -> bool {
     let id = id.trim();
 
-    // 1. 长度
-    if id.len() != 18 {
+    // 1. 长度 + 前17位数字 + 地址码首位不为0 一次性检查
+    if id.len() != 18 
+        || id.starts_with('0') 
+        || !id[..17].chars().all(|c| c.is_ascii_digit()) {
         return false;
     }
 
-    // 2. 前17位必须是数字
-    let body = &id[..17];
-    if !body.chars().all(|c| c.is_ascii_digit()) {
-        return false;
-    }
-
-    // 3. 第18位
-    let last = match id.chars().nth(17) {
+    // 2. 第18位
+    let last = match id.chars().last() {
         Some(c) => c.to_ascii_uppercase(),
         None => return false,
     };
@@ -64,24 +60,17 @@ pub fn is_valid_with_map_and_mode(
         return false;
     }
 
-    // 4. 地址码首位不能为0
-    match id.chars().next() {
-        Some('0') => return false,
-        None => return false,
-        _ => {}
-    }
-
-    // 5. 出生日期
+    // 3. 出生日期
     if !is_valid_date(&id[6..14]) {
         return false;
     }
 
-    // 6. 校验码 MOD 11-2
-    if !verify_checksum(body, last) {
+    // 4. 校验码 MOD 11-2
+    if !verify_checksum(&id[..17], last) {
         return false;
     }
 
-    // 7. 地址码存在性（按模式选择策略）
+    // 5. 地址码存在性（按模式选择策略）
     match mode {
         AddressMatchMode::Exact6 => is_address_exact6(id, codes),
         AddressMatchMode::Fallback64 => is_address_fallback64(id, codes),
