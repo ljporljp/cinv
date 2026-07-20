@@ -115,7 +115,7 @@ cargo build
 
 ## Project Structure
 
-```
+``` text
 cinv/
 
 ├── Cargo.toml
@@ -152,7 +152,9 @@ cargo test test_generate_valid_id
 ## Performance  
 
 内置地址码使用 LazyLock静态初始化，首次调用后零开销
-HashMap查找时间复杂度 O(1)
+- 内置地址码使用 LazyLock静态初始化，首次调用后零开销
+- HashMap查找时间复杂度 O(1)
+- 单次校验仅需微秒级，适合高并发场景  
 单次校验仅需微秒级，适合高并发场景  
 
 ## License 
@@ -161,8 +163,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## References 
 
-GB 11643‑1999：《公民身份号码》
-GB/T 2260：《中华人民共和国行政区划代码》
-ISO 7064 MOD 11‑2：校验码算法标准
+- GB 11643‑1999：《公民身份号码》
+- GB/T 2260：《中华人民共和国行政区划代码》
+- ISO 7064 MOD 11‑2：校验码算法标准
  
 ## Made with ❤️ for the Rust community
