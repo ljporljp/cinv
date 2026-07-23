@@ -12,6 +12,12 @@ Chinese citizen identification number validator​ compliant with GB 11643‑199
 [![dependency status](https://deps.rs/repo/github/ljporljp/cinv/status.svg)](https://deps.rs/repo/github/ljporljp/cinv)
 ![MSRV](https://img.shields.io/badge/MSRV-1.80.0-blue)
 
+## Install
+
+```bash
+cargo add cinv
+```
+
 ## Features
 
 ✅ 18 位格式校验：长度、字符集、地址码首位
@@ -103,17 +109,19 @@ assert!(is_valid_with_map_and_mode(
 
 ## Data
 
-更新地址码
+如何更新地址码？
+
 当民政部发布最新数据后，录入data/address_codes.csv，运行项目中的生成脚本即可生成默认内置地址码：
+
 ``` bash
-
-# 1. 下载最新的 address_codes.csv
-
-# 2. 运行生成脚本
-
 python scripts/generate_address_codes.py data/address_codes.csv src/address_codes.rs
-
 ```
+
+Windows下若有系统编码问题导致生成文件乱码，可使用以下命令：
+``` bash
+cmd /c "set PYTHONIOENCODING=utf-8 && python scripts/generate_address_codes_rs.py data/address_codes.csv src/address_codes.rs"
+```
+
 
 然后重新编译即可
 cargo build
